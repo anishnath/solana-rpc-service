@@ -1,5 +1,6 @@
 use actix_web::{web, App, HttpResponse, HttpServer};
-use solana_client::rpc_client::RpcClient;
+//use solana_client::rpc_client::RpcClient;
+use solana_client::nonblocking::rpc_client::RpcClient;
 use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 
@@ -12,9 +13,10 @@ struct EpochInfoRequest {
     network: Option<String>,
 }
 
-fn get_current_epoch(rpc_client: Arc<RpcClient>) -> u64 {
+async fn get_current_epoch(rpc_client: Arc<RpcClient>) -> u64 {
     // Get the current epoch
-    let epoch_info = rpc_client.get_epoch_info().unwrap();
+    //let epoch_info = rpc_client.get_epoch_info().unwrap();
+    let epoch_info = rpc_client.get_epoch_info().await.unwrap();
     epoch_info.epoch
 }
 
@@ -32,7 +34,8 @@ async fn get_epoch_info(network: web::Path<String>) -> HttpResponse {
     let rpc_client = Arc::new(create_rpc_client(endpoint));
 
     // Get the current epoch
-    let current_epoch = get_current_epoch(rpc_client);
+    //let current_epoch = get_current_epoch(rpc_client);
+    let current_epoch = get_current_epoch(rpc_client).await;
 
     HttpResponse::Ok().json(current_epoch)
 }
@@ -55,9 +58,9 @@ async fn get_epoch_info(info: web::Json<EpochInfoRequest>) -> HttpResponse {
 
     println!("{}",endpoint);
     let rpc_client = Arc::new(create_rpc_client(endpoint));
-
     // Get the current epoch
-    let current_epoch = get_current_epoch(rpc_client);
+    //let current_epoch = get_current_epoch(rpc_client);
+    let current_epoch = get_current_epoch(rpc_client).await;
 
     println!("{}",current_epoch);
 
