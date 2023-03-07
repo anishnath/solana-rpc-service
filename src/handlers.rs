@@ -27,12 +27,10 @@ pub async fn get_epoch_info(info: web::Json<EpochInfoRequest>) -> HttpResponse {
         _ => network.to_string(), // Custom network
     };
 
-    println!("{}",endpoint);
+
     let rpc_client = Arc::new(rpc::create_rpc_client(endpoint));
     // Get the current epoch
     let current_epoch = rpc::get_current_epoch(rpc_client).await;
-
-    println!("{}",current_epoch);
 
     HttpResponse::Ok().json(current_epoch)
 }
